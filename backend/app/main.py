@@ -1,9 +1,16 @@
+
 from fastapi import FastAPI
+
+from backend.app.api.repositories import router as repository_router
+
+from backend.app.api.code_analysis import (
+    router as code_analysis_router
+)
 
 app = FastAPI(
     title="RepoPilot AI API",
     description="AI-Powered Codebase Intelligence Platform",
-    version="0.1.0"
+    version="0.2.0"
 )
 
 
@@ -13,7 +20,7 @@ async def home():
         "project": "RepoPilot AI",
         "message": "Welcome to RepoPilot AI!",
         "status": "running",
-        "version": "0.1.0"
+        "version": "0.2.0"
     }
 
 
@@ -23,3 +30,8 @@ async def health_check():
         "status": "healthy",
         "message": "RepoPilot AI backend is working!"
     }
+
+
+# Register repository API routes
+app.include_router(repository_router)
+app.include_router(code_analysis_router)
