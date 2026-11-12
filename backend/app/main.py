@@ -7,6 +7,8 @@ from backend.app.api.code_analysis import (
     router as code_analysis_router
 )
 
+from backend.app.api.quality_analysis import router as quality_analysis_router
+
 app = FastAPI(
     title="RepoPilot AI API",
     description="AI-Powered Codebase Intelligence Platform",
@@ -35,3 +37,4 @@ async def health_check():
 # Register repository API routes
 app.include_router(repository_router)
 app.include_router(code_analysis_router)
+app.include_router(quality_analysis_router)
