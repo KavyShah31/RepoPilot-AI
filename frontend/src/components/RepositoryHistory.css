@@ -1,0 +1,259 @@
+
+.history-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 35px;
+  color: #f1f5f9;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.history-header h2 {
+  font-size: 25px;
+  margin: 5px 0;
+}
+
+.history-header p {
+  color: #929bb1;
+  margin: 5px 0;
+}
+
+.history-eyebrow {
+  color: #a78bfa !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.history-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 16px;
+  border: 1px solid #343b52;
+  border-radius: 9px;
+  background: #171b2b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.history-secondary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.history-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: #171b2b;
+  border: 1px solid #292f43;
+  border-radius: 12px;
+  color: #a78bfa;
+}
+
+.history-summary strong {
+  color: #fff;
+  font-size: 20px;
+}
+
+.history-summary span {
+  color: #a1aabe;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.history-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 19px;
+  background: #171b2b;
+  border: 1px solid #292f43;
+  border-radius: 13px;
+}
+
+.history-card-main {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+}
+
+.history-card-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: #a78bfa;
+  background: #30234f;
+  border-radius: 11px;
+}
+
+.history-card-info {
+  min-width: 0;
+}
+
+.history-card-info h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.history-card-info > p {
+  margin: 0;
+  color: #929bb1;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.history-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  color: #929bb1;
+  font-size: 12px;
+}
+
+.history-type {
+  padding: 5px 9px;
+  color: #c4b5fd;
+  background: #30234f;
+  border-radius: 20px;
+}
+
+.history-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.history-card-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border: 1px solid #343b52;
+  border-radius: 8px;
+  background: #22283b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.history-card-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.history-card-actions .history-delete-button {
+  color: #fb7185;
+}
+
+.history-empty {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #171b2b;
+  border: 1px dashed #343b52;
+  border-radius: 14px;
+  color: #a78bfa;
+  text-align: center;
+}
+
+.history-empty h3 {
+  color: #fff;
+  margin: 0;
+}
+
+.history-empty p {
+  color: #929bb1;
+  margin: 0;
+}
+
+.history-detail-card {
+  padding: 20px;
+  background: #171b2b;
+  border: 1px solid #292f43;
+  border-radius: 13px;
+}
+
+.history-detail-meta {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: #929bb1;
+  font-size: 13px;
+}
+
+.history-detail-meta span,
+.history-detail-meta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.history-detail-meta a {
+  color: #a78bfa;
+  text-decoration: none;
+}
+
+.history-detail-card h3 {
+  margin: 24px 0 14px;
+}
+
+.history-json {
+  max-height: 650px;
+  overflow: auto;
+  padding: 18px;
+  background: #0d1220;
+  border: 1px solid #292f43;
+  border-radius: 10px;
+  color: #c4d2e8;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.history-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px;
+  color: #fda4af;
+  background: #3b1725;
+  border-radius: 9px;
+}
+
+@media (max-width: 650px) {
+  .history-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .history-card-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
