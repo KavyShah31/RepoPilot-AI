@@ -5,7 +5,7 @@ from typing import Any
 
 
 LONG_FUNCTION_LINES = 50
-HIGH_COMPLEXITY = 10
+HIGH_COMPLEXITY = 5
 
 
 class ComplexityVisitor(ast.NodeVisitor):
