@@ -1,3 +1,4 @@
+import os
 
 from fastapi import FastAPI
 
@@ -16,6 +17,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.app.api.security_analysis import router as security_analysis_router
 
 from backend.app.api.history import router as history_router
+
+from backend.app.api.comparison import router as comparison_router
+
+from backend.app.api.recommendations import router as recommendations_router
+
+from backend.app.api.health import router as health_router
 
 app = FastAPI(
     title="RepoPilot AI API",
@@ -49,13 +56,28 @@ app.include_router(quality_analysis_router)
 app.include_router(ai_review_router)
 app.include_router(security_analysis_router)
 app.include_router(history_router)
+app.include_router(comparison_router)
+app.include_router(recommendations_router)
+app.include_router(health_router)
+
+# Local development origins
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Additional frontend origins from environment variables
+configured_origins = os.getenv("FRONTEND_URLS", "")
+
+for origin in configured_origins.split(","):
+    origin = origin.strip().rstrip("/")
+
+    if origin and origin not in allowed_origins:
+        allowed_origins.append(origin)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

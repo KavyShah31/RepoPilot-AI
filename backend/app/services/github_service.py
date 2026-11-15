@@ -70,42 +70,28 @@ async def get_github_data(
     endpoint: str,
     params: dict | None = None
 ):
-    response = await client.get(
-        f"{GITHUB_API}{endpoint}",
-        params=params
-    )
-
-    if response.status_code == 404:
-        raise HTTPException(
-            status_code=404,
-            detail="Repository not found or not publicly accessible."
-        )
-
-    if response.status_code in {403, 429}:
-        if response.headers.get("X-RateLimit-Remaining") == "0":
-            raise HTTPException(
-                status_code=429,
-                detail="GitHub API rate limit reached. Try again later."
-            )
-
-        raise HTTPException(
-            status_code=502,
-            detail="GitHub API denied the request."
-        )
-
-    if response.is_error:
-        raise HTTPException(
-            status_code=502,
-            detail="GitHub API request failed."
-        )
-
     try:
-        return response.json()
-    except ValueError:
+        response = await client.get(
+            f"{GITHUB_API}{endpoint}",
+            params=params
+        )
+
+    except httpx.TimeoutException:
+        raise HTTPException(
+            status_code=504,
+            detail="GitHub request timed out. Please try again."
+        )
+
+    except httpx.RequestError:
         raise HTTPException(
             status_code=502,
-            detail="GitHub returned an invalid response."
+            detail="Unable to connect to GitHub. Check your internet connection."
         )
+        if response.status_code == 404:
+            raise HTTPException(
+                status_code=404,
+                detail="Repository not found or not publicly accessible."
+            )
 
 
 async def get_repository_analysis(repo_url: str) -> dict:

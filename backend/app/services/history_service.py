@@ -1,5 +1,6 @@
 
 import json
+import os
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -8,8 +9,15 @@ from fastapi.encoders import jsonable_encoder
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DATABASE_DIR = PROJECT_ROOT / "data"
-DATABASE_PATH = DATABASE_DIR / "repopilot.db"
+
+DEFAULT_DATABASE_PATH = PROJECT_ROOT / "data" / "repopilot.db"
+
+DATABASE_PATH = Path(
+    os.getenv("REPOPILOT_DATABASE_PATH")
+    or str(DEFAULT_DATABASE_PATH)
+).expanduser()
+
+DATABASE_DIR = DATABASE_PATH.parent
 
 
 def get_connection():
@@ -124,3 +132,41 @@ def delete_history(scan_id):
 
 
 initialize_database()
+
+def get_repository_scan_history(repo_url, limit=50):
+    """Return recent scan records for one repository, oldest first."""
+    normalized_url = repo_url.strip().rstrip("/").lower()
+
+    with get_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT
+                id,
+                analysis_type,
+                repo_url,
+                repository,
+                created_at,
+                result_json
+            FROM scan_history
+            WHERE LOWER(RTRIM(repo_url, '/')) = ?
+            ORDER BY created_at DESC, id DESC
+            LIMIT ?
+            """,
+            (normalized_url, limit),
+        ).fetchall()
+
+    records = []
+
+    for row in reversed(rows):
+        record = dict(row)
+
+        try:
+            record["result"] = json.loads(
+                record.pop("result_json")
+            )
+        except (json.JSONDecodeError, TypeError):
+            record["result"] = {}
+
+        records.append(record)
+
+    return records
