@@ -154,13 +154,9 @@ function AnalysisResult({ title, data }) {
 // ==========================================
 
 export default function RepositoryComparison() {
-  const [repoUrl1, setRepoUrl1] = useState(
-    "https://github.com/TheAlgorithms/Python"
-  );
+  const [repoUrl1, setRepoUrl1] = useState(  );
 
-  const [repoUrl2, setRepoUrl2] = useState(
-    "https://github.com/psf/requests"
-  );
+  const [repoUrl2, setRepoUrl2] = useState();
 
   const [result, setResult] = useState(null);
 
