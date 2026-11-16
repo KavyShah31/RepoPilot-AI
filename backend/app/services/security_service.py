@@ -4,7 +4,7 @@ import base64
 
 import httpx
 from backend.app.services.github_auth import get_github_headers
-headers = get_github_headers()
+
 from urllib.parse import quote, urlparse
 from fastapi import HTTPException
 
@@ -72,6 +72,7 @@ def parse_github_url(repo_url: str) -> tuple[str, str]:
     return owner, repo
 
 
+
 async def github_get(
     client: httpx.AsyncClient,
     endpoint: str,
@@ -86,8 +87,20 @@ async def github_get(
     if response.status_code == 404:
         raise HTTPException(404, "GitHub repository or resource not found.")
 
-    if response.status_code == 403:
-        raise HTTPException(429, "GitHub API rate limit reached. Try again later.")
+    if response.status_code in (403, 429):
+        if (
+            response.status_code == 429
+            or response.headers.get("X-RateLimit-Remaining") == "0"
+        ):
+            raise HTTPException(
+                429,
+                "GitHub API rate limit exceeded. Please try again later.",
+            )
+
+        raise HTTPException(
+            502,
+            "GitHub access was restricted. Please try again later.",
+        )
 
     if response.status_code >= 400:
         raise HTTPException(
@@ -96,7 +109,6 @@ async def github_get(
         )
 
     return response.json()
-
 
 def decode_github_blob(blob: dict) -> str | None:
     if blob.get("encoding") != "base64":
@@ -138,11 +150,7 @@ async def get_repository_security_analysis(
 
     repository_path = f"/repos/{owner_path}/{repo_path}"
 
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "RepoPilot-AI",
-    }
+    headers = get_github_headers()
 
     async with httpx.AsyncClient(
         headers=headers,
