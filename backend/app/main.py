@@ -1,5 +1,8 @@
 import os
 
+import httpx
+from backend.app.services.github_auth import get_github_headers
+
 from fastapi import FastAPI
 
 from backend.app.api.repositories import router as repository_router
@@ -48,6 +51,43 @@ async def health_check():
         "message": "RepoPilot AI backend is working!"
     }
 
+@app.get("/diagnostics/github-auth", tags=["System"])
+async def github_auth_diagnostic():
+    headers = get_github_headers()
+    token_configured = "Authorization" in headers
+
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            response = await client.get(
+                "https://api.github.com/rate_limit",
+                headers=headers
+            )
+
+        if response.status_code != 200:
+            return {
+                "token_configured": token_configured,
+                "authenticated": False,
+                "github_status": response.status_code
+            }
+
+        data = response.json()
+        core = data.get("resources", {}).get("core", {})
+
+        limit = core.get("limit", 0)
+
+        return {
+            "token_configured": token_configured,
+            "authenticated": token_configured and limit > 60,
+            "core_limit": limit,
+            "core_remaining": core.get("remaining", 0)
+        }
+
+    except httpx.RequestError:
+        return {
+            "token_configured": token_configured,
+            "authenticated": False,
+            "error": "GitHub API request failed"
+        }
 
 # Register repository API routes
 app.include_router(repository_router)
