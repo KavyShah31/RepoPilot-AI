@@ -154,7 +154,7 @@ function AnalysisResult({ title, data }) {
 // ==========================================
 
 export default function RepositoryComparison() {
-  const [repoUrl1, setRepoUrl1] = useState(  );
+  const [repoUrl1, setRepoUrl1] = useState("");
 
   const [repoUrl2, setRepoUrl2] = useState();
 
