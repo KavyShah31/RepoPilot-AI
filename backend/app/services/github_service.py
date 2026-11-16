@@ -1,7 +1,8 @@
 
 import asyncio
 import base64
-
+from backend.app.services.github_auth import get_github_headers
+headers = get_github_headers()
 from urllib.parse import quote
 
 from backend.app.services.code_parser import (

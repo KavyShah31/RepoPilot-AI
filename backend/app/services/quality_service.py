@@ -5,7 +5,8 @@ import httpx
 
 from urllib.parse import quote, urlparse
 from fastapi import HTTPException
-
+from backend.app.services.github_auth import get_github_headers
+headers = get_github_headers()
 from backend.app.services.quality_analyzer import (
     analyze_python_quality,
     calculate_quality_score,

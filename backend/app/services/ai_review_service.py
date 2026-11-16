@@ -16,7 +16,8 @@ from backend.app.schemas.ai_review import (
     FileReview,
     ReviewFinding,
 )
-
+from backend.app.services.github_auth import get_github_headers
+github_headers = get_github_headers()
 
 load_dotenv()
 
