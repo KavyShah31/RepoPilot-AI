@@ -2,7 +2,6 @@
 import asyncio
 import base64
 from backend.app.services.github_auth import get_github_headers
-headers = get_github_headers()
 from urllib.parse import quote
 
 from backend.app.services.code_parser import (
@@ -127,11 +126,7 @@ async def get_repository_analysis(repo_url: str) -> dict:
 
     owner, repo = parse_github_repo_url(repo_url)
 
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": GITHUB_API_VERSION,
-        "User-Agent": "RepoPilot-AI"
-    }
+    headers = get_github_headers()
 
     async with httpx.AsyncClient(
         headers=headers,
@@ -217,11 +212,7 @@ async def get_repository_code_analysis(
             detail=f"max_files must be between 1 and {MAX_CODE_FILES}."
         )
 
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": GITHUB_API_VERSION,
-        "User-Agent": "RepoPilot-AI"
-    }
+    headers = get_github_headers()
 
     async with httpx.AsyncClient(
         headers=headers,
