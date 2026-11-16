@@ -54,41 +54,55 @@ async def health_check():
 @app.get("/diagnostics/github-auth", tags=["System"])
 async def github_auth_diagnostic():
     headers = get_github_headers()
-    token_configured = "Authorization" in headers
+
+    results = {}
+
+    endpoints = {
+        "repository": "/repos/psf/requests",
+        "languages": "/repos/psf/requests/languages",
+        "contents": "/repos/psf/requests/contents"
+    }
 
     try:
-        async with httpx.AsyncClient(timeout=15) as client:
-            response = await client.get(
-                "https://api.github.com/rate_limit",
-                headers=headers
-            )
+        async with httpx.AsyncClient(
+            timeout=15,
+            follow_redirects=True
+        ) as client:
 
-        if response.status_code != 200:
-            return {
-                "token_configured": token_configured,
-                "authenticated": False,
-                "github_status": response.status_code
-            }
+            for name, endpoint in endpoints.items():
+                response = await client.get(
+                    f"https://api.github.com{endpoint}",
+                    headers=headers
+                )
 
-        data = response.json()
-        core = data.get("resources", {}).get("core", {})
+                try:
+                    body = response.json()
+                except ValueError:
+                    body = {}
 
-        limit = core.get("limit", 0)
+                results[name] = {
+                    "status": response.status_code,
+                    "remaining": response.headers.get(
+                        "X-RateLimit-Remaining"
+                    ),
+                    "retry_after": response.headers.get(
+                        "Retry-After"
+                    ),
+                    "message": body.get("message")
+                    if isinstance(body, dict) else None
+                }
 
         return {
-            "token_configured": token_configured,
-            "authenticated": token_configured and limit > 60,
-            "core_limit": limit,
-            "core_remaining": core.get("remaining", 0)
+            "token_configured": "Authorization" in headers,
+            "results": results
         }
 
     except httpx.RequestError:
         return {
-            "token_configured": token_configured,
-            "authenticated": False,
-            "error": "GitHub API request failed"
+            "error": "GitHub API connection failed"
         }
 
+    
 # Register repository API routes
 app.include_router(repository_router)
 app.include_router(code_analysis_router)
