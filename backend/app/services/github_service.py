@@ -64,7 +64,6 @@ def parse_github_repo_url(repo_url: str) -> tuple[str, str]:
 
     return owner, repo
 
-
 async def get_github_data(
     client: httpx.AsyncClient,
     endpoint: str,
@@ -87,12 +86,40 @@ async def get_github_data(
             status_code=502,
             detail="Unable to connect to GitHub. Check your internet connection."
         )
-        if response.status_code == 404:
+
+    # Handle GitHub API response
+    if response.status_code == 404:
+        raise HTTPException(
+            status_code=404,
+            detail="Repository not found or not publicly accessible."
+        )
+
+    if response.status_code in (403, 429):
+        if response.headers.get("X-RateLimit-Remaining") == "0":
             raise HTTPException(
-                status_code=404,
-                detail="Repository not found or not publicly accessible."
+                status_code=429,
+                detail="GitHub API rate limit exceeded. Please try again later."
             )
 
+        raise HTTPException(
+            status_code=502,
+            detail="GitHub access was restricted. Please try again later."
+        )
+
+    if response.is_error:
+        raise HTTPException(
+            status_code=502,
+            detail=f"GitHub API request failed with status {response.status_code}."
+        )
+
+    try:
+        return response.json()
+
+    except ValueError:
+        raise HTTPException(
+            status_code=502,
+            detail="GitHub returned an invalid response."
+        )
 
 async def get_repository_analysis(repo_url: str) -> dict:
     """Analyze public repository metadata and root directory."""
