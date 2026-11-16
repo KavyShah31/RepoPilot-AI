@@ -1,0 +1,15 @@
+﻿services:
+  - type: web
+    name: repopilot-ai-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements-render.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: REPOPILOT_DATABASE_PATH
+        value: /tmp/repopilot.db
+      - key: FRONTEND_URLS
+        sync: false
